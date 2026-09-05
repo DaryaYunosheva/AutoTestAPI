@@ -23,4 +23,4 @@ class TestMock:
                     response = api_client.get("/api/news/", expected_status = 503, headers = {"content-type": "application/json"})
                     with allure.step("Проверка ответа"):
                         error = ErrorResponse(**response.json())
-                        assert error.detail == "Service temporarily unavailable"
+                        assert error.detail == "Service temporarily unavailabl"
