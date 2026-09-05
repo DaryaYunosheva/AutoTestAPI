@@ -3,7 +3,7 @@ from random import randint
 import pytest
 import allure
 from conftest import api_client, auth_client
-from helpers.data_generator import generate_news, generate_word
+from helpers.data_generator import generate_news
 from models import HTTPValidationError, ErrorResponse, NewsResponse, NewsListResponse, TagResponse
 
 
@@ -166,7 +166,7 @@ class TestNews:
     def test_get_news_filters_tag(self, auth_client):
         with allure.step("Получение тега"):
             response_tag = auth_client.get("/api/news/tags", expected_status=200)
-            tag = TagResponse(**response_tag.json()[randint(50,100)])
+            tag = TagResponse(**response_tag.json()[randint(0,len(response_tag.json())-1)])
 
 
         with allure.step("Отправка запроса"):

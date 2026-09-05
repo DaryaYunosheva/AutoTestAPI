@@ -96,6 +96,30 @@ class TestComments:
             error = ErrorResponse(**response.json())
             assert "Not authenticated" in str(error), "Комментарий нельзя создавать неавторизованному пользователю"
 
+    @allure.story("Создание комментария с некорректным токеном")
+    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.description("Проверка, как система среагирует на запрос создания новости c некорректным токеном")
+    @pytest.mark.negative
+    def test_create_news_invalid_token(self, api_client):
+        with allure.step("Установка некорректного токена"):
+            api_client.session.headers.update({"Authorization": "Bearer invalid_token"})
+
+        with allure.step("Получение новости, для которой будет создаваться комментарий"):
+            news_response = api_client.get("/api/news/", expected_status=200)
+            news = news_response.json()["items"]
+            new = NewsResponse(**news[0])
+
+        with allure.step("Генерация комментария"):
+            comment_data = generate_comment()
+
+        with allure.step("Отправка запроса"):
+            response = api_client.post(f"/api/news/{new.id}/comments", json=comment_data, headers={"Content-Type": "application/json"}, expected_status=401)
+
+        with allure.step("Проверка ответа"):
+            error = ErrorResponse(**response.json())
+            assert "could not validate credentials" in error.detail.lower()
+        api_client.session.headers.pop("Authorization", None)
+
     @allure.story("Получение комментариев конкретной новости")
     @allure.severity(allure.severity_level.NORMAL)
     @allure.description("Проверка, что система выведет все комментарии конкретной новости")

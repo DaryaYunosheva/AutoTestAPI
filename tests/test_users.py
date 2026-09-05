@@ -1,9 +1,6 @@
 import pytest
 import allure
-from pygments.lexers import email
-
-from conftest import test_user_credentials
-from models import UserResponse, HTTPValidationError
+from models import UserResponse, HTTPValidationError, ErrorResponse
 
 
 @allure.epic("Профиль")
@@ -26,6 +23,35 @@ class TestUser:
             assert user.id == auth_client.user_id
             assert user.created_at is not None
             assert user.id > 0
+
+    @allure.story("Получение неавторизованного пользователя")
+    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.description("Проверка, что система отклонит запрос")
+    @pytest.mark.positive
+    def test_get_current_user(self, api_client, test_user_credentials):
+        with allure.step("Отправка запроса"):
+            response = api_client.get("/api/users/me", expected_status=401)
+
+        with allure.step("Проверка ответа"):
+            error = ErrorResponse(**response.json())
+            assert error.detail == "Not authenticated"
+
+
+    @allure.story("Получение пользователя с некорректным токеном")
+    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.description("Проверка, что система отклонит запрос")
+    @pytest.mark.positive
+    def test_get_current_user(self, api_client, test_user_credentials):
+        with allure.step("Установка некорректного токена"):
+            api_client.session.headers.update({"Authorization": "Bearer invalid_token"})
+
+        with allure.step("Отправка запроса"):
+            response = api_client.get("/api/users/me", expected_status=401)
+
+        with allure.step("Проверка ответа"):
+            error = ErrorResponse(**response.json())
+            assert error.detail == "Could not validate credentials"
+
 
     @allure.story("Редактирование данных пользователя")
     @allure.severity(allure.severity_level.NORMAL)

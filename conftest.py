@@ -78,7 +78,6 @@ def api_client(base_url: str):
                     allure.attach(response.text, name="Response body",attachment_type=allure.attachment_type.TEXT)
 
                 assert response.status_code == expected_status, f"При запросе {url} ожидали статус {expected_status}, получили {response.status_code}"
-                print("Получилось")
 
             return response
 
@@ -88,7 +87,7 @@ def api_client(base_url: str):
         def post(self, endpoint: str, expected_status: int, **kwargs):
             return self.request("POST", endpoint, expected_status, **kwargs)
 
-        def put(self, endpoint: str, data=None, expected_status: int = 200, **kwargs):
+        def put(self, endpoint: str, expected_status: int = 200, **kwargs):
             return self.request("PUT", endpoint, expected_status, **kwargs)
 
     return APIClient()
