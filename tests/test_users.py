@@ -11,7 +11,7 @@ class TestUser:
     @allure.severity(allure.severity_level.BLOCKER)
     @allure.description("Проверка на соответствие данных в бд")
     @pytest.mark.positive
-    def test_get_current_user(self, auth_client, test_user_credentials):
+    def test_get_current_user_success(self, auth_client, test_user_credentials):
         with allure.step("Отправка запроса"):
             response = auth_client.get("/api/users/me", expected_status=200)
 
@@ -25,10 +25,10 @@ class TestUser:
             assert user.id > 0
 
     @allure.story("Получение неавторизованного пользователя")
-    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.severity(allure.severity_level.CRITICAL)
     @allure.description("Проверка, что система отклонит запрос")
-    @pytest.mark.positive
-    def test_get_current_user(self, api_client, test_user_credentials):
+    @pytest.mark.negative
+    def test_get_current_user_not_auth(self, api_client, test_user_credentials):
         with allure.step("Отправка запроса"):
             response = api_client.get("/api/users/me", expected_status=401)
 
@@ -38,10 +38,10 @@ class TestUser:
 
 
     @allure.story("Получение пользователя с некорректным токеном")
-    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.severity(allure.severity_level.CRITICAL)
     @allure.description("Проверка, что система отклонит запрос")
-    @pytest.mark.positive
-    def test_get_current_user(self, api_client, test_user_credentials):
+    @pytest.mark.negative
+    def test_get_current_user_not_token(self, api_client, test_user_credentials):
         with allure.step("Установка некорректного токена"):
             api_client.session.headers.update({"Authorization": "Bearer invalid_token"})
 

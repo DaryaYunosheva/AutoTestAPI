@@ -18,7 +18,7 @@ class TestMock:
             mocked.status_code = 503
             mocked._content = b'{"detail":"Service temporarily unavailable"}'
         with allure.step("Подмена на мок"):
-            with patch.object(api_client, "request", return_value=mocked):
+            with patch.object(api_client.session, "request", return_value=mocked):
                 with allure.step("Отправка запроса"):
                     response = api_client.get("/api/news/", expected_status = 503, headers = {"content-type": "application/json"})
                     with allure.step("Проверка ответа"):

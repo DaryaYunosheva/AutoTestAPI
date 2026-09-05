@@ -98,9 +98,9 @@ class TestComments:
 
     @allure.story("Создание комментария с некорректным токеном")
     @allure.severity(allure.severity_level.CRITICAL)
-    @allure.description("Проверка, как система среагирует на запрос создания новости c некорректным токеном")
+    @allure.description("Проверка, как система среагирует на запрос создания комментария c некорректным токеном")
     @pytest.mark.negative
-    def test_create_news_invalid_token(self, api_client):
+    def test_create_comment_invalid_token(self, api_client):
         with allure.step("Установка некорректного токена"):
             api_client.session.headers.update({"Authorization": "Bearer invalid_token"})
 
